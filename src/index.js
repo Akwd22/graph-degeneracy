@@ -54,6 +54,10 @@ const genererGraphe = (nbSommets, probabilite) => {
   return graphe;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                           Importation de graphes                           */
+/* -------------------------------------------------------------------------- */
+
 const importerFichier = (event) => {
   const fichier = event.target.files[0];
   if (!fichier) return;
@@ -62,21 +66,28 @@ const importerFichier = (event) => {
 
   reader.onload = (event) => {
     const content = event.target.result;
-    parseFichier(content);
+
+    if (fichier.type === "text/csv") {
+      parseCSV(content);
+    } else if (fichier.type === "text/plain") {
+      parseTXT(content);
+    } else {
+      alert("Fichier n'est ni un CSV, ni un TXT.");
+    }
   };
 
   reader.readAsText(fichier);
 };
 
-const parseFichier = (contenu) => {
+const parseCSV = (contenu) => {
   let graphe = [];
   let lines = contenu.split("\n");
 
   lines.forEach((element) => {
-    let colones = element.split(",");
+    let colonnes = element.split(",");
 
-    let source = colones[0] - 1;
-    let voisin = colones[1] - 1;
+    let source = colonnes[0] - 1;
+    let voisin = colonnes[1] - 1;
 
     if (!graphe[source]) graphe[source] = [];
     if (!graphe[voisin]) graphe[voisin] = [];
@@ -90,10 +101,40 @@ const parseFichier = (contenu) => {
     }
   });
 
-  console.log(graphe);
+  console.log("Graphe :", graphe);
 
   afficherGraphe(graphe);
 };
+
+const parseTXT = (contenu) => {
+  let graphe = [];
+  let lines = contenu.split("\n");
+  lines.splice(0, 4); // Supprimer les 4 premières lignes de commentaire.
+
+  lines.forEach((element) => {
+    let colonnes = element.split("\t");
+
+    let source = colonnes[0] - 1;
+    let voisin = colonnes[1] - 1;
+
+    if (!graphe[source]) graphe[source] = [];
+    if (!graphe[voisin]) graphe[voisin] = [];
+
+    if (graphe[source].indexOf(voisin) === -1) {
+      graphe[source].push(voisin);
+    }
+
+    if (graphe[voisin].indexOf(source) === -1) {
+      graphe[voisin].push(source);
+    }
+  });
+
+  console.log("Graphe :", graphe);
+
+  afficherGraphe(graphe);
+};
+
+document.getElementById("input-import").addEventListener("change", importerFichier);
 
 /* -------------------------------------------------------------------------- */
 /*                                   Events                                   */
@@ -130,10 +171,4 @@ document.getElementById("input-probability").addEventListener("change", (e) => {
   window.onload();
 });
 
-document
-  .getElementById("button-refresh")
-  .addEventListener("click", window.onload);
-
-document
-  .getElementById("input-import")
-  .addEventListener("change", importerFichier, false);
+document.getElementById("button-refresh").addEventListener("click", window.onload);
