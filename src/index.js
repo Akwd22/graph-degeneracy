@@ -1,6 +1,10 @@
 let n = 2;
 let probabilite = 100;
 
+/* -------------------------------------------------------------------------- */
+/*                               Afficher Graphe                              */
+/* -------------------------------------------------------------------------- */
+
 function afficherGraphe(graphe) {
   const graph = new graphology.Graph();
   const nbSommets = graphe.length;
@@ -12,9 +16,9 @@ function afficherGraphe(graphe) {
     graph.addNode(i, {
       x: x,
       y: y,
-      size: 10,
+      size: 8,
       label: `S${i}`,
-      color: "cyan",
+      color: "#FF6E0F",
     });
   }
 
@@ -23,7 +27,7 @@ function afficherGraphe(graphe) {
     if (!graphe[i]) continue;
 
     for (let j of graphe[i]) {
-      graph.addEdge(i, j);
+      graph.addEdge(i, j, { size: 2, color: "#818181" });
     }
   }
 
@@ -32,6 +36,10 @@ function afficherGraphe(graphe) {
 
   const renderer = new Sigma(graph, container);
 }
+
+/* -------------------------------------------------------------------------- */
+/*                               Générer graphe                               */
+/* -------------------------------------------------------------------------- */
 
 const genererGraphe = (nbSommets, probabilite) => {
   let graphe = [];
@@ -52,6 +60,56 @@ const genererGraphe = (nbSommets, probabilite) => {
   }
 
   return graphe;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                               Dégénérescence                               */
+/* -------------------------------------------------------------------------- */
+
+const degenererGraphe = (g) => {
+  let nbSommets = g.length;
+  let graphe = JSON.parse(JSON.stringify(g));
+  let degenerer = [];
+  let k = 1;
+  let nbSommetsRestant = nbSommets;
+
+  graphe.forEach((element, index) => {
+    degenerer[index] = [index];
+  });
+
+  // console.log("Graphe dege : ", JSON.parse(JSON.stringify(graphe)));
+
+  while (nbSommetsRestant > 0) {
+    let trouver = false;
+    for (const [index, element] of Object.entries(graphe)) {
+      // graphe.forEach((element, index) => {
+      if (element && element.length <= k) {
+        // console.log(JSON.parse(JSON.stringify(element)));
+        degenerer[index].push(k);
+        element.forEach((voisin) => {
+          try {
+            graphe[voisin].splice(graphe[voisin].indexOf(+index), 1);
+          } catch (e) {}
+        });
+        graphe[index] = null;
+        // console.log(nbSommetsRestant);
+        nbSommetsRestant--;
+        trouver = true;
+        break;
+      }
+    }
+
+    if (!trouver) {
+      k++;
+    }
+
+    console.log("K", k);
+    // console.log("Graphe : ", JSON.parse(JSON.stringify(graphe)));
+  }
+
+  console.log(degenerer);
+
+  return degenerer;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -104,6 +162,7 @@ const parseCSV = (contenu) => {
   console.log("Graphe :", graphe);
 
   afficherGraphe(graphe);
+  degenererGraphe(graphe);
 };
 
 const parseTXT = (contenu) => {
@@ -132,6 +191,7 @@ const parseTXT = (contenu) => {
   console.log("Graphe :", graphe);
 
   afficherGraphe(graphe);
+  degenererGraphe(graphe);
 };
 
 document.getElementById("input-import").addEventListener("change", importerFichier);
@@ -145,7 +205,46 @@ window.onload = () => {
   console.log("-----------------------------------");
 
   let graphe = genererGraphe(n, probabilite);
+  // let graphe = parseTXT(`# Graphe du sujet
+  // # Graphe du sujet
+  // # Graphe du sujet
+  // # Graphe du sujet
+  // 1	2
+  // 1	3
+  // 1	5
+  // 1	6
+  // 1	4
+  // 2	7
+  // 2	1
+  // 7	5
+  // 7	8
+  // 7	6
+  // 7	2
+  // 8	6
+  // 8	9
+  // 8	7
+  // 9	6
+  // 9	8
+  // 6	10
+  // 6	4
+  // 6	1
+  // 6	5
+  // 6	7
+  // 6	8
+  // 6	9
+  // 10	6
+  // 4	6
+  // 4	3
+  // 4	1
+  // 3	5
+  // 3	1
+  // 3	4
+  // 5	6
+  // 5	3
+  // 5	1
+  // 5	7`);
   afficherGraphe(graphe);
+  degenererGraphe(graphe);
 };
 
 function setupOptions() {
