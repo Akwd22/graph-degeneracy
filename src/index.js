@@ -1,9 +1,28 @@
 let n = 2;
 let probabilite = 100;
 
+let renderers = {
+  rendererGraph: null,
+  rendererCores: null,
+};
+
+function setupRenderers() {
+  renderers.rendererGraph = new Sigma(new graphology.Graph(), document.getElementById("sigma-graph"));
+  renderers.rendererCores = new Sigma(new graphology.Graph(), document.getElementById("sigma-cores"));
+}
+
+/** Générer un entier entre `min` (inclus) et `max` (inclus). */
+function randInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function afficherGraphe(graphe) {
-  const graph = new graphology.Graph();
+  const graph = renderers.rendererGraph.graph;
   const nbSommets = graphe.length;
+
+  graph.clear();
 
   // Afficher les sommets.
   for (let i = 0; i < nbSommets; i++) {
@@ -27,10 +46,87 @@ function afficherGraphe(graphe) {
     }
   }
 
-  const container = document.getElementById("sigma");
-  container.innerHTML = ""; // Vider le conteneur.
+  // Effacer l'ancien graphe s'il y en avait un.
+  // if (renderers.rendererGraph) {
+  //   renderers.rendererGraph.graph.clear();
+  // } else {
+  //   renderers.rendererGraph = new Sigma(graph, document.getElementById("sigma-graph"));
+  // }
+}
 
-  const renderer = new Sigma(graph, container);
+function afficherJoliDessin(centres) {
+  centres = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10, 11], [12, 13, 14, 15], [16]];
+  // const sommets_de_centre_X = centres[numero_centre_X]
+
+  const graph = renderers.rendererCores.graph;
+
+  graph.clear();
+
+  let diametre = centres.length;
+
+  // Pour chaque numéro de centre...
+  centres.forEach((sommets) => {
+    const anglePas = 360 / sommets.length;
+    let angle = 0;
+
+    const color = `rgb(${randInt(0, 255)}, ${randInt(0, 255)}, ${randInt(0, 255)})`;
+
+    // ... plaçage des sommets autour d'un cercle.
+    sommets.forEach((sommet) => {
+      const x = Math.cos((angle / 180) * Math.PI) * (diametre / 2);
+      const y = Math.sin((angle / 180) * Math.PI) * (diametre / 2);
+      angle = (angle + anglePas) % 360;
+
+      graph.addNode(sommet, {
+        x: x,
+        y: y,
+        size: 10,
+        label: `S${sommet}`,
+        color: color,
+      });
+    });
+
+    // ... reliage des sommets pour former le périmètre du cercle.
+    sommets.forEach((sommet) => {
+      let voisin;
+
+      if (sommet === sommets[sommets.length - 1]) {
+        voisin = sommets[0];
+      } else {
+        voisin = sommet + 1;
+      }
+
+      graph.addEdge(sommet, voisin, { color: color });
+    });
+
+    diametre--;
+  });
+
+  // Effacer l'ancien graphe s'il y en avait un.
+  // if (renderers.rendererCores) {
+  //   renderers.rendererCores.graph.clear();
+  // }
+
+  // renderers.rendererCores = new Sigma(graph, document.getElementById("sigma-cores"));
+}
+
+function screenshotJoliDessin() {
+  const jpeg = new Image();
+
+  jpeg.onload = () => {
+    const pdf = new jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [jpeg.height, jpeg.width] });
+
+    // const w = pdf.internal.pageSize.getWidth();
+    // const h = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(jpeg, "JPEG", 0, 0);
+
+    pdf.save("joli_dessin.pdf");
+  };
+
+  const url = sigmaScreenshot(renderers.rendererCores);
+  console.log(url);
+  jpeg.src = url;
 }
 
 const genererGraphe = (nbSommets, probabilite) => {
@@ -142,11 +238,16 @@ document.getElementById("input-import").addEventListener("change", importerFichi
 
 window.onload = () => {
   setupOptions();
-  console.log("-----------------------------------");
+  setupRenderers();
+  grapheAleatoire();
+};
 
+function grapheAleatoire() {
+  console.log("-----------------------------------");
   let graphe = genererGraphe(n, probabilite);
   afficherGraphe(graphe);
-};
+  afficherJoliDessin();
+}
 
 function setupOptions() {
   // Récupération des options.
@@ -161,14 +262,16 @@ document.getElementById("input-nodes").addEventListener("change", (e) => {
   n = +e.target.value;
   localStorage.setItem("nbSommets", n);
 
-  window.onload();
+  grapheAleatoire();
 });
 
 document.getElementById("input-probability").addEventListener("change", (e) => {
   const probability = +e.target.value;
   localStorage.setItem("probability", probability);
 
-  window.onload();
+  grapheAleatoire();
 });
 
-document.getElementById("button-refresh").addEventListener("click", window.onload);
+document.getElementById("button-random").addEventListener("click", grapheAleatoire);
+
+document.getElementById("button-export").addEventListener("click", screenshotJoliDessin);

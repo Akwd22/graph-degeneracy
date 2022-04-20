@@ -1,3 +1,64 @@
-.options {
-    display: flex;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+html,
+body {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: #003049;
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+button {
+  width: 100%;
+}
+
+.horizontal-layout {
+  display: flex;
+}
+
+.section-options {
+  text-align: center;
+}
+
+.section-canvas {
+  display: flex;
+  column-gap: 3px;
+  width: 100%;
+  height: 100%;
+}
+
+.section-graph {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #D62828;
+}
+
+.section-cores {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #F77F00;
+}
+
+#sigma-graph, #sigma-cores {
+  height: 100%;
+  background-color: #E3E6E8;
+}
+
+/* .section-graph {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 100%;
+  background-color: cadetblue;
 }

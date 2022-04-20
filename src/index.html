@@ -4,21 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles/style.css" />
-    <title>TP 03 - Graphes</title>
+    <link rel="stylesheet" href="style.css" />
+    <title>Projet Graphe</title>
   </head>
   <body>
-    <section class="section-graph">
-      <h1>Graphe</h1>
+    <section class="section-options">
+      <h1>Projet Graphe - Dégénérescence</h1>
       <div class="options">
         <label for="input-nodes">Nombre de sommets</label>
-        <input
-          id="input-nodes"
-          type="number"
-          placeholder="Nombre de sommets"
-          min="1"
-          value="50"
-        />
+        <input id="input-nodes" type="number" placeholder="Nombre de sommets" min="1" value="50" />
         <label for="input-probability">Probabilité d'une arête (%)</label>
         <input
           id="input-probability"
@@ -28,16 +22,35 @@
           max="100"
           value="50"
         />
-        <label for="input-import">Importer un fichier</label>
-        <input id="input-import" type="file" />
+        <label for="input-import">Importer un graphe</label>
+        <input id="input-import" type="file" accept="text/csv, text/plain" />
       </div>
       <br />
-      <button id="button-refresh">Actualiser</button>
-      <div id="sigma"></div>
+    </section>
+
+    <section class="section-canvas">
+      <section class="section-graph">
+        <div id="sigma-graph"></div>
+        <h2>Graphe (Dégénérescence : <span id="label-result">?</span>)</h2>
+        <div class="horizontal-layout">
+          <button id="button-random">Générer un graphe aléatoire</button>
+          <button id="button-calculate">Calculer dégénérescence</button>
+        </div>
+      </section>
+
+      <section class="section-cores">
+        <div id="sigma-cores"></div>
+        <h2>Dessin des numéros de centre</h2>
+        <div class="horizontal-layout">
+          <button id="button-export">Exporter en PDF</button>
+        </div>
+      </section>
     </section>
 
     <script src="libs/sigma/graphology.js"></script>
     <script src="libs/sigma/sigma.js"></script>
+    <script src="libs/sigma/screenshot.js"></script>
+    <script src="libs/jspdf.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
