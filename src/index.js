@@ -327,6 +327,7 @@ function setupOptions() {
 
 document.getElementById("input-nodes").addEventListener("change", (e) => {
   n = +e.target.value;
+  if (n > 1000) n = 1000;
   localStorage.setItem("nbSommets", n);
 
   grapheAleatoire();
