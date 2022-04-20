@@ -11,6 +11,10 @@ function setupRenderers() {
   renderers.rendererCores = new Sigma(new graphology.Graph(), document.getElementById("sigma-cores"));
 }
 
+function getObjectLength(object) {
+  return Object.keys(object).length;
+}
+
 /** Générer un entier entre `min` (inclus) et `max` (inclus). */
 function randInt(min, max) {
   min = Math.ceil(min);
@@ -20,29 +24,28 @@ function randInt(min, max) {
 
 function afficherGraphe(graphe) {
   const graph = renderers.rendererGraph.graph;
-  const nbSommets = graphe.length;
 
   graph.clear();
 
   // Afficher les sommets.
-  for (let i = 0; i < nbSommets; i++) {
+  for (const sommet in graphe) {
     const x = Math.floor(Math.random() * 10000 + 1);
     const y = Math.floor(Math.random() * 10000 + 1);
-    graph.addNode(i, {
+    graph.addNode(sommet, {
       x: x,
       y: y,
       size: 8,
-      label: `S${i}`,
+      label: `S${sommet}`,
       color: "#FF6E0F",
     });
   }
 
   // Afficher les arêtes.
-  for (let i = 0; i < nbSommets; i++) {
-    if (!graphe[i]) continue;
+  for (const sommet in graphe) {
+    if (!graphe[sommet]) continue;
 
-    for (let j of graphe[i]) {
-      graph.addEdge(i, j, { size: 2, color: "#25A1A8" });
+    for (let voisin of graphe[sommet]) {
+      graph.addEdge(sommet, voisin, { size: 2, color: "#25A1A8" });
     }
   }
 }
@@ -53,14 +56,14 @@ function afficherJoliDessin(centres) {
 
   let newCentres = [];
 
-  centres.forEach((arr) => {
+  for (const arr of Object.values(centres)) {
     const sommet = arr[0];
     const centre = arr[1] - 1;
 
     if (!newCentres[centre]) newCentres[centre] = [];
 
     newCentres[centre].push(sommet);
-  });
+  }
 
   centres = newCentres;
 
@@ -161,29 +164,30 @@ const genererGraphe = (nbSommets, probability) => {
 /* -------------------------------------------------------------------------- */
 
 const degenererGraphe = (g) => {
-  let nbSommets = g.length;
+  let nbSommets = getObjectLength(g);
   let graphe = JSON.parse(JSON.stringify(g));
-  let degenerer = [];
+
+  let degenerer = {};
   let k = 1;
   let nbSommetsRestant = nbSommets;
 
-  graphe.forEach((element, index) => {
-    degenerer[index] = [index];
-  });
+  for (const index in graphe) {
+    degenerer[index] = [+index];
+  }
 
   // console.log("Graphe dege : ", JSON.parse(JSON.stringify(graphe)));
 
   while (nbSommetsRestant > 0) {
     let trouver = false;
-    for (const [index, element] of Object.entries(graphe)) {
+    // for (const [index, element] of Object.entries(graphe)) {
+    for (const index in graphe) {
+      const element = graphe[index];
       // graphe.forEach((element, index) => {
       if (element && element.length <= k) {
         // console.log(JSON.parse(JSON.stringify(element)));
         degenerer[index].push(k);
         element.forEach((voisin) => {
-          try {
-            graphe[voisin].splice(graphe[voisin].indexOf(+index), 1);
-          } catch (e) {}
+          graphe[voisin].splice(graphe[voisin].indexOf(+index), 1);
         });
         graphe[index] = null;
         // console.log(nbSommetsRestant);
@@ -197,11 +201,11 @@ const degenererGraphe = (g) => {
       k++;
     }
 
-    console.log("K", k);
+    // console.log("K", k);
     // console.log("Graphe : ", JSON.parse(JSON.stringify(graphe)));
   }
 
-  console.log(degenerer);
+  console.log("degenerer : ", degenerer);
 
   return degenerer;
 };
@@ -232,7 +236,7 @@ const importerFichier = (event) => {
 };
 
 const parseCSV = (contenu) => {
-  let graphe = [];
+  let graphe = {};
   let lines = contenu.split("\n");
 
   lines.forEach((element) => {
@@ -240,6 +244,8 @@ const parseCSV = (contenu) => {
 
     let source = colonnes[0] - 1;
     let voisin = colonnes[1] - 1;
+
+    if (source === voisin) return; // Dans certains fichiers, des sommets sont voisin avec eux-mêmes.
 
     if (!graphe[source]) graphe[source] = [];
     if (!graphe[voisin]) graphe[voisin] = [];
@@ -260,7 +266,7 @@ const parseCSV = (contenu) => {
 };
 
 const parseTXT = (contenu) => {
-  let graphe = [];
+  let graphe = {};
   let lines = contenu.split("\n");
   lines.splice(0, 4); // Supprimer les 4 premières lignes de commentaire.
 
@@ -269,6 +275,8 @@ const parseTXT = (contenu) => {
 
     let source = colonnes[0] - 1;
     let voisin = colonnes[1] - 1;
+
+    if (source === voisin) return; // Dans certains fichiers, des sommets sont voisin avec eux-mêmes.
 
     if (!graphe[source]) graphe[source] = [];
     if (!graphe[voisin]) graphe[voisin] = [];
@@ -302,7 +310,7 @@ window.onload = () => {
 
 function grapheAleatoire() {
   console.log("-----------------------------------");
-  
+
   let graphe = genererGraphe(n, probability);
   afficherGraphe(graphe);
   afficherJoliDessin(degenererGraphe(graphe));
