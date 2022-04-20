@@ -1,5 +1,5 @@
 let n = 2;
-let probabilite = 100;
+let probability = 100;
 
 let renderers = {
   rendererGraph: null,
@@ -42,21 +42,29 @@ function afficherGraphe(graphe) {
     if (!graphe[i]) continue;
 
     for (let j of graphe[i]) {
-      graph.addEdge(i, j, { size: 2, color: "#818181" });
+      graph.addEdge(i, j, { size: 2, color: "#25A1A8" });
     }
   }
-
-  // Effacer l'ancien graphe s'il y en avait un.
-  // if (renderers.rendererGraph) {
-  //   renderers.rendererGraph.graph.clear();
-  // } else {
-  //   renderers.rendererGraph = new Sigma(graph, document.getElementById("sigma-graph"));
-  // }
 }
 
 function afficherJoliDessin(centres) {
-  centres = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10, 11], [12, 13, 14, 15], [16]];
+  // centres = [[9], [1, 6, 7, 8], [0, 2, 3, 4, 5]];
   // const sommets_de_centre_X = centres[numero_centre_X]
+
+  let newCentres = [];
+
+  centres.forEach((arr) => {
+    const sommet = arr[0];
+    const centre = arr[1] - 1;
+
+    if (!newCentres[centre]) newCentres[centre] = [];
+
+    newCentres[centre].push(sommet);
+  });
+
+  centres = newCentres;
+
+  console.log(newCentres);
 
   const graph = renderers.rendererCores.graph;
 
@@ -80,20 +88,19 @@ function afficherJoliDessin(centres) {
       graph.addNode(sommet, {
         x: x,
         y: y,
-        size: 10,
-        label: `S${sommet}`,
+        size: 5,
         color: color,
       });
     });
 
     // ... reliage des sommets pour former le périmètre du cercle.
-    sommets.forEach((sommet) => {
+    sommets.forEach((sommet, index) => {
       let voisin;
 
-      if (sommet === sommets[sommets.length - 1]) {
+      if (index === sommets.length - 1) {
         voisin = sommets[0];
       } else {
-        voisin = sommet + 1;
+        voisin = sommets[index + 1];
       }
 
       graph.addEdge(sommet, voisin, { color: color });
@@ -102,12 +109,7 @@ function afficherJoliDessin(centres) {
     diametre--;
   });
 
-  // Effacer l'ancien graphe s'il y en avait un.
-  // if (renderers.rendererCores) {
-  //   renderers.rendererCores.graph.clear();
-  // }
-
-  // renderers.rendererCores = new Sigma(graph, document.getElementById("sigma-cores"));
+  document.getElementById("label-result").innerText = centres.length;
 }
 
 function screenshotJoliDessin() {
@@ -133,7 +135,7 @@ function screenshotJoliDessin() {
 /*                               Générer graphe                               */
 /* -------------------------------------------------------------------------- */
 
-const genererGraphe = (nbSommets, probabilite) => {
+const genererGraphe = (nbSommets, probability) => {
   let graphe = [];
 
   for (let i = 0; i < nbSommets; i++) {
@@ -144,7 +146,7 @@ const genererGraphe = (nbSommets, probabilite) => {
     for (let j = 0; j < nbSommets; j++) {
       let num = Math.random() * 101;
 
-      if (num < probabilite && j != i && graphe[i].indexOf(j) === -1) {
+      if (num < probability && j != i && graphe[i].indexOf(j) === -1) {
         graphe[i].push(j);
         graphe[j].push(i);
       }
@@ -254,7 +256,7 @@ const parseCSV = (contenu) => {
   console.log("Graphe :", graphe);
 
   afficherGraphe(graphe);
-  degenererGraphe(graphe);
+  afficherJoliDessin(degenererGraphe(graphe));
 };
 
 const parseTXT = (contenu) => {
@@ -283,7 +285,7 @@ const parseTXT = (contenu) => {
   console.log("Graphe :", graphe);
 
   afficherGraphe(graphe);
-  degenererGraphe(graphe);
+  afficherJoliDessin(degenererGraphe(graphe));
 };
 
 document.getElementById("input-import").addEventListener("change", importerFichier);
@@ -300,58 +302,19 @@ window.onload = () => {
 
 function grapheAleatoire() {
   console.log("-----------------------------------");
-  let graphe = genererGraphe(n, probabilite);
-  // let graphe = parseTXT(`# Graphe du sujet
-  // # Graphe du sujet
-  // # Graphe du sujet
-  // # Graphe du sujet
-  // 1	2
-  // 1	3
-  // 1	5
-  // 1	6
-  // 1	4
-  // 2	7
-  // 2	1
-  // 7	5
-  // 7	8
-  // 7	6
-  // 7	2
-  // 8	6
-  // 8	9
-  // 8	7
-  // 9	6
-  // 9	8
-  // 6	10
-  // 6	4
-  // 6	1
-  // 6	5
-  // 6	7
-  // 6	8
-  // 6	9
-  // 10	6
-  // 4	6
-  // 4	3
-  // 4	1
-  // 3	5
-  // 3	1
-  // 3	4
-  // 5	6
-  // 5	3
-  // 5	1
-  // 5	7`);
-  afficherGraphe(graphe);
   
-  const centres = degenererGraphe(graphe);
-  afficherJoliDessin();
-};
+  let graphe = genererGraphe(n, probability);
+  afficherGraphe(graphe);
+  afficherJoliDessin(degenererGraphe(graphe));
+}
 
 function setupOptions() {
   // Récupération des options.
   n = +localStorage.getItem("nbSommets") ?? 5;
   document.getElementById("input-nodes").value = n;
 
-  probabilite = +localStorage.getItem("probability") ?? 100;
-  document.getElementById("input-probability").value = probabilite;
+  probability = +localStorage.getItem("probability") ?? 100;
+  document.getElementById("input-probability").value = probability;
 }
 
 document.getElementById("input-nodes").addEventListener("change", (e) => {
@@ -362,7 +325,7 @@ document.getElementById("input-nodes").addEventListener("change", (e) => {
 });
 
 document.getElementById("input-probability").addEventListener("change", (e) => {
-  const probability = +e.target.value;
+  probability = +e.target.value;
   localStorage.setItem("probability", probability);
 
   grapheAleatoire();
