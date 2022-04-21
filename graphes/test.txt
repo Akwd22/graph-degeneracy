@@ -1,6 +1,2 @@
-# Graphe du sujet
-# Graphe du sujet
-# Graphe du sujet
-# Graphe du sujet
-1	2
-2	1
+1 2
+2 1
