@@ -11,11 +11,13 @@ const options = {
  */
 function setupOptions() {
   // Récupération des options.
-  nbSommets = +localStorage.getItem("nbSommets") ?? 5;
-  document.getElementById("input-nodes").value = nbSommets;
+  options.nbSommets = localStorage.getItem("nbSommets") ?? 100;
+  options.nbSommets = +options.nbSommets;
+  document.getElementById("input-nodes").value = options.nbSommets;
 
-  probabilite = +localStorage.getItem("probabilite") ?? 100;
-  document.getElementById("input-probability").value = probabilite;
+  options.probabilite = localStorage.getItem("probabilite") ?? 5;
+  options.probabilite = +options.probabilite;
+  document.getElementById("input-probability").value = options.probabilite;
 }
 
 /* -------------------------------------------------------------------------- */

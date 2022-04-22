@@ -11,7 +11,7 @@ function degenererGraphe(graphe) {
   let k = 1;
   let nbSommetsRestant = nbSommets;
 
-  // Initialisation le tableau de dégénérescence.
+  // Initialisation du tableau de dégénérescence.
   for (const numSommet in graphe) {
     degenerer[numSommet] = [+numSommet];
   }

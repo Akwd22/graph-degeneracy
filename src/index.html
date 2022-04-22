@@ -12,7 +12,7 @@
       <h1>Projet Graphe - Dégénérescence</h1>
       <div class="options">
         <label for="input-nodes">Nombre de sommets</label>
-        <input id="input-nodes" type="number" placeholder="Nombre de sommets" min="1" max="1000" value="50" />
+        <input id="input-nodes" type="number" placeholder="Nombre de sommets" min="0" max="1000" value="100" />
         <label for="input-probability">Probabilité d'une arête (%)</label>
         <input
           id="input-probability"
@@ -20,7 +20,8 @@
           placeholder="Probabilité d'une arête (%)"
           min="0"
           max="100"
-          value="50"
+          step="any"
+          value="5"
         />
         <label for="input-import">Importer un graphe</label>
         <input id="input-import" type="file" accept="text/csv, text/plain" />
