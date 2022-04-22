@@ -1,3 +1,2 @@
-# Graphe de 2 sommets reliés.
 1 2
 2 1
