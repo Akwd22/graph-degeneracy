@@ -62,7 +62,7 @@ document.getElementById("input-probability").addEventListener("change", (e) => {
 
 /* --------------------------------- Boutons -------------------------------- */
 
-document.getElementById("input-import").addEventListener("change", () => importerFichier());
+document.getElementById("input-import").addEventListener("change", (e) => importerFichier(e));
 
 document.getElementById("button-random").addEventListener("click", () => genererGraphe(options.nbSommets, options.probabilite));
 

@@ -115,14 +115,12 @@ function exportPDF() {
   const jpeg = new Image();
 
   jpeg.onload = () => {
-    const pdf = new jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [jpeg.height, jpeg.width] });
+    const pdf = new jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [jpeg.height / 2, jpeg.width / 2] });
 
-    pdf.addImage(jpeg, "JPEG", 0, 0);
+    pdf.addImage(jpeg, "JPEG", 0, 0, jpeg.height / 2, jpeg.width / 2);
     pdf.save("joli_dessin.pdf");
   };
 
-  const url = sigmaScreenshot(renderers.rendererCores);
-
-  console.log(url);
+  const url = sigmaScreenshot(renderers.rendererCores, 768, 768);
   jpeg.src = url;
 }

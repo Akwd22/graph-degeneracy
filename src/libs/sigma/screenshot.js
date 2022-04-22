@@ -10,8 +10,8 @@
  *    settings, graph, camera...), use it and kill it
  * This exemple uses this last solution.
  */
- function sigmaScreenshot(renderer, inputLayers) {
-    var _a = renderer.getDimensions(), width = _a.width, height = _a.height;
+ function sigmaScreenshot(renderer, width, height, inputLayers) {
+    var _a = renderer.getDimensions(), width = width || _a.width, height = height || _a.height;
     // This pixel ratio is here to deal with retina displays.
     // Indeed, for dimensions W and H, on a retina display, the canvases
     // dimensions actually are 2 * W and 2 * H. Sigma properly deals with it, but
