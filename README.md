@@ -49,11 +49,12 @@ This project is a small application to **compute** and **visually represent** th
 <!-- CONTEXT -->
 ## Context
 
-This project is an academic project realized during the **third year** of a **Bachelor of Computer Science**.  
+This project is an academic project made during the **third year** of a **Bachelor of Computer Science**.  
 The development was done by 2 people.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- BUILT WITH -->
 ## Built With
 
 JavaScript libraries:
