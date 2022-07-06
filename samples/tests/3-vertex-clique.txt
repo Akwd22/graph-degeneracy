@@ -1,4 +1,4 @@
-# Clique de 3.
+# 3-vertex clique.
 1 2
 2 1
 2 3
